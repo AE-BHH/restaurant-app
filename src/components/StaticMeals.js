@@ -5,7 +5,13 @@ import RecipeContainer from './RecipeContainer'
 import IngredientList from './IngredientList'
 import CardGenerator from './CardGenerator'
 import recipeArr from '../assets/recipesData'
-import { getAllIngredients, getActiveRecipes } from '../utils'
+import {
+	getAllIngredients,
+	getActiveRecipes,
+	getUpdatedActiveIngredients,
+	getUpdatedDiscardedIngredients,
+} from '../utils'
+import { Prev } from 'react-bootstrap/esm/PageItem'
 
 function StaticMeals() {
 	const [activeIngredients, setActiveIngredients] = useState(
@@ -17,17 +23,16 @@ function StaticMeals() {
 	function handleRemoveIngredients(event) {
 		const item = event.target.value
 
-		const updatedActiveMeals = getActiveRecipes(activeIngredients, recipeArr)
+		const updatedActiveIngredients = getUpdatedActiveIngredients(
+			activeIngredients,
+			item
+		)
+		const updatedActiveMeals = getActiveRecipes(
+			updatedActiveIngredients,
+			recipeArr
+		)
 
-		setActiveIngredients((prev) => {
-			return prev.filter((element) => {
-				if (element === item) {
-					return false
-				} else {
-					return true
-				}
-			})
-		})
+		setActiveIngredients(updatedActiveIngredients)
 
 		setDiscardedIngredients((previous) => {
 			return [...previous, item]
@@ -38,11 +43,14 @@ function StaticMeals() {
 
 	function restoreIngredients(event) {
 		const item = event.target.value
-		const updatedActiveMeals = getActiveRecipes(activeIngredients, recipeArr)
 
-		setActiveIngredients((prev) => {
-			return [...prev, item]
-		})
+		const updatedDiscardedIngredients = getUpdatedDiscardedIngredients(activeIngredients,item)
+
+		const updatedActiveMeals = getActiveRecipes(updatedDiscardedIngredients,recipeArr)
+
+		// setActiveIngredients(updatedDiscardedIngredients)
+		setActiveIngredients(updatedDiscardedIngredients)
+
 		setDiscardedIngredients((prev) => {
 			return prev.filter((element) => {
 				if (element === item) {
